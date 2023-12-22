@@ -6,9 +6,9 @@ replicaCount: 1
 
 image:
   repository: earthly/buildkitd
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.6.2"
+  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -60,13 +60,12 @@ ingress:
   #      - chart-example.local
 
 resources:
-  {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
 autoscaling:
   enabled: false
@@ -82,4 +81,4 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-persistentVolumeClaimName: "earthly-local-claim"
+# persistentVolumeClaimName: "earthly-local-claim"

@@ -40,11 +40,19 @@ spec:
             protocol: TCP
         resources:
           {{- toYaml .Values.resources | nindent 12 }}
-        {{- with .Values.persistentVolumeClaimName }}
         volumeMounts:
         - name: earthly-cache
           mountPath: /tmp/earthly
-          {{- end }}
+        volumeClaimTemplates:
+          - metadata:
+              name: earthly-cache
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 500Gi
+              storageClassName: local-storage
     {{- with .Values.nodeSelector }}
     nodeSelector:
       {{- toYaml . | nindent 8 }}
@@ -56,10 +64,4 @@ spec:
     {{- with .Values.tolerations }}
     tolerations:
       {{- toYaml . | nindent 8 }}
-    {{- end }}
-    {{- with .Values.persistentVolumeClaimName }}
-    volumes:
-      - name: earthly-cache
-        persistentVolumeClaim:
-          claimName: {{ . }}
     {{- end }}
