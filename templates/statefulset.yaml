@@ -43,16 +43,16 @@ spec:
         volumeMounts:
         - name: earthly-cache
           mountPath: /tmp/earthly
-        volumeClaimTemplates:
-          - metadata:
-              name: earthly-cache
-            spec:
-              accessModes:
-                - ReadWriteOnce
-              resources:
-                requests:
-                  storage: 500Gi
-              storageClassName: local-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: earthly-cache
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Gi
+        storageClassName: local-storage
     {{- with .Values.nodeSelector }}
     nodeSelector:
       {{- toYaml . | nindent 8 }}
