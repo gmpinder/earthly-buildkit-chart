@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "earthly-buildkit-chart.fullname" . }}
+  labels:
+    {{- include "earthly-buildkit-chart.labels" . | nindent 4 }}
+spec:
+  serviceName: "earthly-buildkit"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "earthly-buildkit-chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "earthly-buildkit-chart.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/usr/bin/entrypoint.sh", "buildkitd", "--config=/etc/buildkitd.toml", "--debugaddr=127.0.0.1:8054"]
+        env:
+          - name: BUILDKIT_TCP_TRANSPORT_ENABLED
+            value: "true"
+          - name: BUILDKIT_TLS_ENABLED
+            value: "false"
+          - name: CACHE_SIZE_MB
+            value: "45000"
+          # - name: BUILDKIT_SCHEDULER_DEBUG
+          #   value: "1"
+          # - name: BUILDKIT_DEBUG
+          #   value: "true"
+  
+        ports:
+          - name: buildkit
+            containerPort: 8372
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        {{- with .Values.persistentVolumeClaimName }}
+        volumeMounts:
+        - name: earthly-cache
+          mountPath: /tmp/earthly
+          {{- end }}
+    {{- with .Values.nodeSelector }}
+    nodeSelector:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+    affinity:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+    tolerations:
+      {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.persistentVolumeClaimName }}
+    volumes:
+      - name: earthly-cache
+        persistentVolumeClaim:
+          claimName: {{ . }}
+    {{- end }}

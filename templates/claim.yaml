@@ -1,11 +1,23 @@
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: earthly-ebs-claim
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: gp2
+#   resources:
+#     requests:
+#       storage: 50Gi
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: earthly-ebs-claim
+  name: earthly-local-claim
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: gp2
   resources:
     requests:
-      storage: 50Gi
+      storage: 500Gi
+  storageClassName: local-storage

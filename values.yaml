@@ -82,4 +82,4 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-persistentVolumeClaimName: "earthly-ebs-claim"
+persistentVolumeClaimName: "earthly-local-claim"
